@@ -4,9 +4,8 @@ local flying = false
 local flySpeed = 60
 local infJumpEnabled = false
 local spectating = false
-local spectateIndex = 1
 
--- 1. [FLY] - ПОЛЕТ (Идеальные углы, все направления)
+-- 1. [FLY] ИДЕАЛЬНЫЙ ПОЛЕТ (Без кривых углов)
 local function toggleFly()
     flying = not flying
     local char = player.Character or player.CharacterAdded:Wait()
@@ -18,6 +17,7 @@ local function toggleFly()
         local bv = Instance.new("BodyVelocity", root)
         bv.Name = "FlyVelocity"
         bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+        
         local bg = Instance.new("BodyGyro", root)
         bg.Name = "FlyGyro"
         bg.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
@@ -25,13 +25,15 @@ local function toggleFly()
 
         task.spawn(function()
             while flying and char:FindFirstChild("HumanoidRootPart") do
-                local moveDir = hum.MoveDirection
                 local camCF = camera.CFrame
+                local moveDir = hum.MoveDirection
+                
                 if moveDir.Magnitude > 0 then
-                    local direction = (camCF.LookVector * -moveDir.Z) + (camCF.RightVector * moveDir.X)
-                    bv.Velocity = direction.Unit * flySpeed
+                    -- ИДЕАЛЬНЫЙ ВЕКТОР: летим точно по джойстику относительно взгляда
+                    local flyDir = (camCF.LookVector * -moveDir.Z) + (camCF.RightVector * moveDir.X)
+                    bv.Velocity = flyDir.Unit * flySpeed
                 else
-                    bv.Velocity = Vector3.new(0, 0.1, 0)
+                    bv.Velocity = Vector3.new(0, 0.1, 0) -- Зависание
                 end
                 bg.CFrame = camCF
                 task.wait()
@@ -45,25 +47,7 @@ local function toggleFly()
     end
 end
 
--- 2. [SPECTATE] - СЛЕЖКА ЗА ЛЮДЬМИ
-local function toggleSpectate()
-    spectating = not spectating
-    local camera = workspace.CurrentCamera
-    if spectating then
-        local targetPlayers = {}
-        for _, p in pairs(game.Players:GetPlayers()) do
-            if p ~= player then table.insert(targetPlayers, p) end
-        end
-        if #targetPlayers > 0 then
-            camera.CameraSubject = targetPlayers[1].Character.Humanoid
-            print("Следим за: " .. targetPlayers[1].Name)
-        end
-    else
-        camera.CameraSubject = player.Character.Humanoid
-    end
-end
-
--- [ИНТЕРФЕЙС GUI]
+-- 2. [GUI] ИНТЕРФЕЙС
 local sg = Instance.new("ScreenGui", game:GetService("CoreGui"))
 local Frame = Instance.new("Frame", sg)
 local Toggle = Instance.new("TextButton", sg)
@@ -94,10 +78,10 @@ local function CreateButton(text, pos, color, func)
     return btn
 end
 
--- КНОПКИ ФУНКЦИЙ
-CreateButton("FLY (Летать везде)", UDim2.new(0.05, 0, 0.05, 0), Color3.fromRGB(60, 60, 60), toggleFly)
+-- КНОПКИ
+CreateButton("FLY (Идеальный)", UDim2.new(0.05, 0, 0.05, 0), Color3.fromRGB(60, 60, 60), toggleFly)
 
-local jumpBtn = CreateButton("INF JUMP (Прыжки)", UDim2.new(0.05, 0, 0.16, 0), Color3.fromRGB(50, 50, 50), function() 
+local jumpBtn = CreateButton("INF JUMP: OFF", UDim2.new(0.05, 0, 0.16, 0), Color3.fromRGB(50, 50, 50), function() 
     infJumpEnabled = not infJumpEnabled 
 end)
 
@@ -111,7 +95,19 @@ CreateButton("NOCLIP (Сквозь стены)", UDim2.new(0.05, 0, 0.27, 0), Co
     end)
 end)
 
-CreateButton("SPECTATE (Слежка)", UDim2.new(0.05, 0, 0.38, 0), Color3.fromRGB(0, 100, 200), toggleSpectate)
+CreateButton("SPECTATE (Слежка)", UDim2.new(0.05, 0, 0.38, 0), Color3.fromRGB(0, 100, 200), function()
+    spectating = not spectating
+    local camera = workspace.CurrentCamera
+    if spectating then
+        local players = game.Players:GetPlayers()
+        local target = players[math.random(1, #players)]
+        if target ~= player and target.Character then
+            camera.CameraSubject = target.Character.Humanoid
+        end
+    else
+        camera.CameraSubject = player.Character.Humanoid
+    end
+end)
 
 CreateButton("ESP (Подсветка)", UDim2.new(0.05, 0, 0.49, 0), Color3.fromRGB(50, 50, 50), function()
     for _, p in pairs(game.Players:GetPlayers()) do
@@ -122,15 +118,17 @@ CreateButton("ESP (Подсветка)", UDim2.new(0.05, 0, 0.49, 0), Color3.fro
     end
 end)
 
-CreateButton("SPEED 100", UDim2.new(0.05, 0, 0.60, 0), Color3.fromRGB(50, 50, 50), function()
-    if player.Character then player.Character.Humanoid.WalkSpeed = 100 end
-end)
-
 CreateButton("RESET", UDim2.new(0.05, 0, 0.85, 0), Color3.fromRGB(150, 50, 50), function()
     if player.Character then player.Character:BreakJoints() end
 end)
 
--- 3. [INF JUMP] - ОБРАБОТКА БЕСКОНЕЧНОГО ПРЫЖКА
+-- 3. [SYSTEM] ЧАТ И ПРЫЖОК
+player.Chatted:Connect(function(msg)
+    local args = string.split(msg, " ")
+    if args[1]:lower() == prefix.."fly" then toggleFly()
+    elseif args[1]:lower() == prefix.."re" then player.Character:BreakJoints() end
+end)
+
 game:GetService("UserInputService").JumpRequest:Connect(function()
     if infJumpEnabled and player.Character then 
         local h = player.Character:FindFirstChildOfClass("Humanoid")
@@ -138,15 +136,6 @@ game:GetService("UserInputService").JumpRequest:Connect(function()
     end
 end)
 
--- [ЧАТ КОМАНДЫ]
-player.Chatted:Connect(function(msg)
-    local args = string.split(msg, " ")
-    local cmd = args[1]:lower()
-    if cmd == prefix .. "fly" then toggleFly()
-    elseif cmd == prefix .. "re" then player.Character:BreakJoints() end
-end)
-
--- Обновление текста кнопок прыжка
 task.spawn(function()
     while task.wait(0.5) do
         jumpBtn.Text = infJumpEnabled and "Inf Jump: ON" or "Inf Jump: OFF"
