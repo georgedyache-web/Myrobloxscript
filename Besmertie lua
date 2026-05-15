@@ -1,99 +1,154 @@
--- Создание основы интерфейса на чистом Roblox GUI
 local ScreenGui = Instance.new("ScreenGui")
 local MainFrame = Instance.new("Frame")
 local Title = Instance.new("TextLabel")
-local ToggleGod = Instance.new("TextButton")
-local ToggleKillZones = Instance.new("TextButton")
-local AddSpeed = Instance.new("TextButton")
+local ButtonSpeed100 = Instance.new("TextButton")
+local ButtonSpeedNormal = Instance.new("TextButton")
+local ToggleFly = Instance.new("TextButton")
+local CloseMenu = Instance.new("TextButton")
+local OpenButton = Instance.new("TextButton")
 local UICorner = Instance.new("UICorner")
+local UICornerOpen = Instance.new("UICorner")
 
--- Настройка контейнера меню
 ScreenGui.Parent = game:GetService("CoreGui")
-ScreenGui.Name = "LocalModMenu"
+ScreenGui.Name = "UltraFlySpeedMenu"
 
+-- КНОПКА ОТКРЫТИЯ
+OpenButton.Name = "OpenButton"
+OpenButton.Parent = ScreenGui
+OpenButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+OpenButton.Position = UDim2.new(0, 10, 0, 10)
+OpenButton.Size = UDim2.new(0, 110, 0, 35)
+OpenButton.Text = "Открыть Меню"
+OpenButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+OpenButton.TextSize = 14
+OpenButton.Font = Enum.Font.SourceSansBold
+OpenButton.Visible = false
+UICornerOpen.Parent = OpenButton
+
+-- ГЛАВНОЕ ОКНО
 MainFrame.Name = "MainFrame"
 MainFrame.Parent = ScreenGui
-MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-MainFrame.Position = UDim2.new(0.1, 0, 0.2, 0)
-MainFrame.Size = UDim2.new(0, 250, 0, 300)
+MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+MainFrame.Position = UDim2.new(0.3, 0, 0.3, 0)
+MainFrame.Size = UDim2.new(0, 260, 0, 250)
 MainFrame.Active = true
-MainFrame.Draggable = true -- Меню можно перетаскивать мышкой/пальцем
-
+MainFrame.Draggable = true
 UICorner.Parent = MainFrame
 
--- Заголовок меню
+-- ЗАГОЛОВОК
 Title.Parent = MainFrame
-Title.Size = UDim2.new(1, 0, 0, 40)
-Title.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-Title.Text = "Roblox GOD MENU"
+Title.Size = UDim2.new(1, -40, 0, 40)
+Title.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+Title.Text = "  FLY & SPEED MENU"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.TextSize = 18
+Title.TextSize = 16
+Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Font = Enum.Font.SourceSansBold
 
--- Кнопка 1: Бесконечное ХП (Loop Heal)
-ToggleGod.Parent = MainFrame
-ToggleGod.Position = UDim2.new(0.05, 0, 0.2, 0)
-ToggleGod.Size = UDim2.new(0.9, 0, 0, 45)
-ToggleGod.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-ToggleGod.Text = "Бессмертие: ВЫКЛ"
-ToggleGod.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleGod.TextSize = 16
+-- КНОПКА ЗАКРЫТИЯ (X)
+CloseMenu.Parent = MainFrame
+CloseMenu.Position = UDim2.new(1, -40, 0, 0)
+CloseMenu.Size = UDim2.new(0, 40, 0, 40)
+CloseMenu.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+CloseMenu.Text = "X"
+CloseMenu.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseMenu.TextSize = 18
+CloseMenu.Font = Enum.Font.SourceSansBold
 
-local godActive = false
-ToggleGod.MouseButton1Click:Connect(function()
-    godActive = not godActive
-    if godActive then
-        ToggleGod.Text = "Бессмертие: ВКЛ"
-        ToggleGod.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+CloseMenu.MouseButton1Click:Connect(function()
+    MainFrame.Visible = false
+    OpenButton.Visible = true
+end)
+
+OpenButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = true
+    OpenButton.Visible = false
+end)
+
+-- КНОПКА: СКОРОСТЬ 100
+ButtonSpeed100.Parent = MainFrame
+ButtonSpeed100.Position = UDim2.new(0.05, 0, 0.22, 0)
+ButtonSpeed100.Size = UDim2.new(0.9, 0, 0, 40)
+ButtonSpeed100.BackgroundColor3 = Color3.fromRGB(50, 180, 50)
+ButtonSpeed100.Text = "Скорость 100"
+ButtonSpeed100.TextColor3 = Color3.fromRGB(255, 255, 255)
+ButtonSpeed100.TextSize = 15
+ButtonSpeed100.Font = Enum.Font.SourceSansBold
+
+ButtonSpeed100.MouseButton1Click:Connect(function()
+    pcall(function()
+        game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid").WalkSpeed = 100
+    end)
+end)
+
+-- КНОПКА: ОБЫЧНАЯ СКОРОСТЬ (16)
+ButtonSpeedNormal.Parent = MainFrame
+ButtonSpeedNormal.Position = UDim2.new(0.05, 0, 0.44, 0)
+ButtonSpeedNormal.Size = UDim2.new(0.9, 0, 0, 40)
+ButtonSpeedNormal.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+ButtonSpeedNormal.Text = "Обычная скорость (16)"
+ButtonSpeedNormal.TextColor3 = Color3.fromRGB(255, 255, 255)
+ButtonSpeedNormal.TextSize = 14
+ButtonSpeedNormal.Font = Enum.Font.SourceSansBold
+
+ButtonSpeedNormal.MouseButton1Click:Connect(function()
+    pcall(function()
+        game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid").WalkSpeed = 16
+    end)
+end)
+
+-- КНОПКА: ПОЛЕТ (FLY)
+ToggleFly.Parent = MainFrame
+ToggleFly.Position = UDim2.new(0.05, 0, 0.70, 0)
+ToggleFly.Size = UDim2.new(0.9, 0, 0, 45)
+ToggleFly.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
+ToggleFly.Text = "Полет (Fly): ВЫКЛ"
+ToggleFly.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleFly.TextSize = 15
+ToggleFly.Font = Enum.Font.SourceSansBold
+
+-- Логика полета (совместимая с мобильными и ПК)
+local flying = false
+local speed = 50 
+local player = game:GetService("Players").LocalPlayer
+
+ToggleFly.MouseButton1Click:Connect(function()
+    flying = not flying
+    if flying then
+        ToggleFly.Text = "Полет (Fly): ВКЛ"
+        ToggleFly.BackgroundColor3 = Color3.fromRGB(50, 180, 50)
+        
         task.spawn(function()
-            while godActive do
+            local char = player.Character or player.CharacterAdded:Wait()
+            local root = char:WaitForChild("HumanoidRootPart")
+            
+            -- Создаем физический объект для удержания в воздухе
+            local bv = Instance.new("BodyVelocity")
+            bv.Name = "FlyVelocity"
+            bv.Velocity = Vector3.new(0, 0, 0)
+            bv.MaxForce = Vector3.new(100000, 100000, 100000)
+            bv.Parent = root
+            
+            local camera = workspace.CurrentCamera
+            
+            while flying do
                 pcall(function()
-                    local hum = game.Players.LocalPlayer.Character.Humanoid
-                    if hum.Health > 0 then
-                        hum.Health = hum.MaxHealth
+                    local hum = char:FindFirstChildOfClass("Humanoid")
+                    -- Направление движения зависит от того, куда смотрит камера
+                    local moveDir = hum.MoveDirection
+                    
+                    if moveDir.Magnitude > 0 then
+                        bv.Velocity = camera.CFrame:VectorToWorldSpace(Vector3.new(moveDir.X * speed, 0, moveDir.Z * -speed))
+                    else
+                        bv.Velocity = Vector3.new(0, 0, 0)
                     end
                 end)
-                task.wait(0.05)
+                task.wait()
             end
+            bv:Destroy()
         end)
     else
-        ToggleGod.Text = "Бессмертие: ВЫКЛ"
-        ToggleGod.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        ToggleFly.Text = "Полет (Fly): ВЫКЛ"
+        ToggleFly.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
     end
-end)
-
--- Кнопка 2: Отключение ловушек (KillBricks)
-ToggleKillZones.Parent = MainFrame
-ToggleKillZones.Position = UDim2.new(0.05, 0, 0.45, 0)
-ToggleKillZones.Size = UDim2.new(0.9, 0, 0, 45)
-ToggleKillZones.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-ToggleKillZones.Text = "Сломать блоки урона"
-ToggleKillZones.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleKillZones.TextSize = 16
-
-ToggleKillZones.MouseButton1Click:Connect(function()
-    pcall(function()
-        for _, obj in pairs(workspace:GetDescendants()) do
-            if obj:IsA("TouchTransmitter") or obj.Name == "TouchInterest" then
-                obj:Destroy()
-            end
-        end
-        ToggleKillZones.Text = "Ловушки сломаны!"
-        ToggleKillZones.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
-    end)
-end)
-
--- Кнопка 3: Увеличение скорости (+Speed)
-AddSpeed.Parent = MainFrame
-AddSpeed.Position = UDim2.new(0.05, 0, 0.7, 0)
-AddSpeed.Size = UDim2.new(0.9, 0, 0, 45)
-AddSpeed.BackgroundColor3 = Color3.fromRGB(50, 100, 200)
-AddSpeed.Text = "Увеличить скорость (Speed: 50)"
-AddSpeed.TextColor3 = Color3.fromRGB(255, 255, 255)
-AddSpeed.TextSize = 16
-
-AddSpeed.MouseButton1Click:Connect(function()
-    pcall(function()
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 50
-    end)
 end)
