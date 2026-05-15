@@ -1,0 +1,99 @@
+-- Создание основы интерфейса на чистом Roblox GUI
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local Title = Instance.new("TextLabel")
+local ToggleGod = Instance.new("TextButton")
+local ToggleKillZones = Instance.new("TextButton")
+local AddSpeed = Instance.new("TextButton")
+local UICorner = Instance.new("UICorner")
+
+-- Настройка контейнера меню
+ScreenGui.Parent = game:GetService("CoreGui")
+ScreenGui.Name = "LocalModMenu"
+
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MainFrame.Position = UDim2.new(0.1, 0, 0.2, 0)
+MainFrame.Size = UDim2.new(0, 250, 0, 300)
+MainFrame.Active = true
+MainFrame.Draggable = true -- Меню можно перетаскивать мышкой/пальцем
+
+UICorner.Parent = MainFrame
+
+-- Заголовок меню
+Title.Parent = MainFrame
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+Title.Text = "Roblox GOD MENU"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 18
+Title.Font = Enum.Font.SourceSansBold
+
+-- Кнопка 1: Бесконечное ХП (Loop Heal)
+ToggleGod.Parent = MainFrame
+ToggleGod.Position = UDim2.new(0.05, 0, 0.2, 0)
+ToggleGod.Size = UDim2.new(0.9, 0, 0, 45)
+ToggleGod.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+ToggleGod.Text = "Бессмертие: ВЫКЛ"
+ToggleGod.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleGod.TextSize = 16
+
+local godActive = false
+ToggleGod.MouseButton1Click:Connect(function()
+    godActive = not godActive
+    if godActive then
+        ToggleGod.Text = "Бессмертие: ВКЛ"
+        ToggleGod.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+        task.spawn(function()
+            while godActive do
+                pcall(function()
+                    local hum = game.Players.LocalPlayer.Character.Humanoid
+                    if hum.Health > 0 then
+                        hum.Health = hum.MaxHealth
+                    end
+                end)
+                task.wait(0.05)
+            end
+        end)
+    else
+        ToggleGod.Text = "Бессмертие: ВЫКЛ"
+        ToggleGod.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+    end
+end)
+
+-- Кнопка 2: Отключение ловушек (KillBricks)
+ToggleKillZones.Parent = MainFrame
+ToggleKillZones.Position = UDim2.new(0.05, 0, 0.45, 0)
+ToggleKillZones.Size = UDim2.new(0.9, 0, 0, 45)
+ToggleKillZones.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+ToggleKillZones.Text = "Сломать блоки урона"
+ToggleKillZones.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleKillZones.TextSize = 16
+
+ToggleKillZones.MouseButton1Click:Connect(function()
+    pcall(function()
+        for _, obj in pairs(workspace:GetDescendants()) do
+            if obj:IsA("TouchTransmitter") or obj.Name == "TouchInterest" then
+                obj:Destroy()
+            end
+        end
+        ToggleKillZones.Text = "Ловушки сломаны!"
+        ToggleKillZones.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+    end)
+end)
+
+-- Кнопка 3: Увеличение скорости (+Speed)
+AddSpeed.Parent = MainFrame
+AddSpeed.Position = UDim2.new(0.05, 0, 0.7, 0)
+AddSpeed.Size = UDim2.new(0.9, 0, 0, 45)
+AddSpeed.BackgroundColor3 = Color3.fromRGB(50, 100, 200)
+AddSpeed.Text = "Увеличить скорость (Speed: 50)"
+AddSpeed.TextColor3 = Color3.fromRGB(255, 255, 255)
+AddSpeed.TextSize = 16
+
+AddSpeed.MouseButton1Click:Connect(function()
+    pcall(function()
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 50
+    end)
+end)
