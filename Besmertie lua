@@ -1,16 +1,31 @@
+-- Создание элементов интерфейса
 local ScreenGui = Instance.new("ScreenGui")
 local MainFrame = Instance.new("Frame")
 local Title = Instance.new("TextLabel")
+local CloseMenu = Instance.new("TextButton")
+local OpenButton = Instance.new("TextButton")
+local ScrollingFrame = Instance.new("ScrollingFrame")
+local UIListLayout = Instance.new("UIListLayout")
+local UIPadding = Instance.new("UIPadding")
+
+-- Кнопки функций
 local ButtonSpeed100 = Instance.new("TextButton")
 local ButtonSpeedNormal = Instance.new("TextButton")
 local ToggleFly = Instance.new("TextButton")
-local CloseMenu = Instance.new("TextButton")
-local OpenButton = Instance.new("TextButton")
-local UICorner = Instance.new("UICorner")
-local UICornerOpen = Instance.new("UICorner")
+local ToggleGod = Instance.new("TextButton")
+local ToggleKillZones = Instance.new("TextButton")
+
+-- Скругления углов
+Instance.new("UICorner", MainFrame)
+Instance.new("UICorner", OpenButton)
+Instance.new("UICorner", ButtonSpeed100)
+Instance.new("UICorner", ButtonSpeedNormal)
+Instance.new("UICorner", ToggleFly)
+Instance.new("UICorner", ToggleGod)
+Instance.new("UICorner", ToggleKillZones)
 
 ScreenGui.Parent = game:GetService("CoreGui")
-ScreenGui.Name = "UltraFlySpeedMenu"
+ScreenGui.Name = "MegaUltimateModMenu"
 
 -- КНОПКА ОТКРЫТИЯ
 OpenButton.Name = "OpenButton"
@@ -23,23 +38,21 @@ OpenButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 OpenButton.TextSize = 14
 OpenButton.Font = Enum.Font.SourceSansBold
 OpenButton.Visible = false
-UICornerOpen.Parent = OpenButton
 
 -- ГЛАВНОЕ ОКНО
 MainFrame.Name = "MainFrame"
 MainFrame.Parent = ScreenGui
 MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 MainFrame.Position = UDim2.new(0.3, 0, 0.3, 0)
-MainFrame.Size = UDim2.new(0, 260, 0, 250)
+MainFrame.Size = UDim2.new(0, 260, 0, 280) -- Компактный размер окна
 MainFrame.Active = true
 MainFrame.Draggable = true
-UICorner.Parent = MainFrame
 
 -- ЗАГОЛОВОК
 Title.Parent = MainFrame
 Title.Size = UDim2.new(1, -40, 0, 40)
 Title.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-Title.Text = "  FLY & SPEED MENU"
+Title.Text = "  MEGA MOD MENU"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.TextSize = 16
 Title.TextXAlignment = Enum.TextXAlignment.Left
@@ -65,51 +78,59 @@ OpenButton.MouseButton1Click:Connect(function()
     OpenButton.Visible = false
 end)
 
--- КНОПКА: СКОРОСТЬ 100
-ButtonSpeed100.Parent = MainFrame
-ButtonSpeed100.Position = UDim2.new(0.05, 0, 0.22, 0)
-ButtonSpeed100.Size = UDim2.new(0.9, 0, 0, 40)
-ButtonSpeed100.BackgroundColor3 = Color3.fromRGB(50, 180, 50)
-ButtonSpeed100.Text = "Скорость 100"
-ButtonSpeed100.TextColor3 = Color3.fromRGB(255, 255, 255)
-ButtonSpeed100.TextSize = 15
-ButtonSpeed100.Font = Enum.Font.SourceSansBold
+-- ЗОНА ПРОКРУТКИ (ScrollingFrame) — чтобы можно было мотать
+ScrollingFrame.Parent = MainFrame
+ScrollingFrame.Position = UDim2.new(0, 0, 0, 40)
+ScrollingFrame.Size = UDim2.new(1, 0, 1, -40)
+ScrollingFrame.BackgroundTransparency = 1
+ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 320) -- Размер прокручиваемой зоны
+ScrollingFrame.ScrollBarThickness = 6
+ScrollingFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100)
 
+UIListLayout.Parent = ScrollingFrame
+UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+UIListLayout.Padding = UDim.new(0, 10)
+
+UIPadding.Parent = ScrollingFrame
+UIPadding.PaddingTop = UDim.new(0, 10)
+UIPadding.PaddingLeft = UDim.new(0, 12)
+UIPadding.PaddingRight = UDim.new(0, 12)
+
+-- Шаблон для быстрой настройки внешнего вида кнопок
+local function setupButton(btn, text, color)
+    btn.Parent = ScrollingFrame
+    btn.Size = UDim2.new(1, 0, 0, 45)
+    btn.BackgroundColor3 = color
+    btn.Text = text
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.TextSize = 15
+    btn.Font = Enum.Font.SourceSansBold
+end
+
+-- Создание всех кнопок в списке
+setupButton(ButtonSpeed100, "Скорость 100", Color3.fromRGB(50, 150, 50))
+setupButton(ButtonSpeedNormal, "Обычная скорость (16)", Color3.fromRGB(70, 70, 70))
+setupButton(ToggleFly, "Полет (Fly): ВЫКЛ", Color3.fromRGB(180, 50, 50))
+setupButton(ToggleGod, "Бессмертие (Loop Heal): ВЫКЛ", Color3.fromRGB(180, 50, 50))
+setupButton(ToggleKillZones, "Авто-удаление ловушек: ВЫКЛ", Color3.fromRGB(180, 50, 50))
+
+-- ЛОГИКА: СКОРОСТЬ 100
 ButtonSpeed100.MouseButton1Click:Connect(function()
     pcall(function()
         game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid").WalkSpeed = 100
     end)
 end)
 
--- КНОПКА: ОБЫЧНАЯ СКОРОСТЬ (16)
-ButtonSpeedNormal.Parent = MainFrame
-ButtonSpeedNormal.Position = UDim2.new(0.05, 0, 0.44, 0)
-ButtonSpeedNormal.Size = UDim2.new(0.9, 0, 0, 40)
-ButtonSpeedNormal.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
-ButtonSpeedNormal.Text = "Обычная скорость (16)"
-ButtonSpeedNormal.TextColor3 = Color3.fromRGB(255, 255, 255)
-ButtonSpeedNormal.TextSize = 14
-ButtonSpeedNormal.Font = Enum.Font.SourceSansBold
-
+-- ЛОГИКА: СКОРОСТЬ 16
 ButtonSpeedNormal.MouseButton1Click:Connect(function()
     pcall(function()
         game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid").WalkSpeed = 16
     end)
 end)
 
--- КНОПКА: ПОЛЕТ (FLY)
-ToggleFly.Parent = MainFrame
-ToggleFly.Position = UDim2.new(0.05, 0, 0.70, 0)
-ToggleFly.Size = UDim2.new(0.9, 0, 0, 45)
-ToggleFly.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
-ToggleFly.Text = "Полет (Fly): ВЫКЛ"
-ToggleFly.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleFly.TextSize = 15
-ToggleFly.Font = Enum.Font.SourceSansBold
-
--- Логика полета (совместимая с мобильными и ПК)
+-- ЛОГИКА: ПОЛЕТ (FLY)
 local flying = false
-local speed = 50 
+local flySpeed = 50
 local player = game:GetService("Players").LocalPlayer
 
 ToggleFly.MouseButton1Click:Connect(function()
@@ -117,28 +138,21 @@ ToggleFly.MouseButton1Click:Connect(function()
     if flying then
         ToggleFly.Text = "Полет (Fly): ВКЛ"
         ToggleFly.BackgroundColor3 = Color3.fromRGB(50, 180, 50)
-        
         task.spawn(function()
             local char = player.Character or player.CharacterAdded:Wait()
             local root = char:WaitForChild("HumanoidRootPart")
-            
-            -- Создаем физический объект для удержания в воздухе
             local bv = Instance.new("BodyVelocity")
             bv.Name = "FlyVelocity"
             bv.Velocity = Vector3.new(0, 0, 0)
             bv.MaxForce = Vector3.new(100000, 100000, 100000)
             bv.Parent = root
-            
             local camera = workspace.CurrentCamera
-            
             while flying do
                 pcall(function()
                     local hum = char:FindFirstChildOfClass("Humanoid")
-                    -- Направление движения зависит от того, куда смотрит камера
                     local moveDir = hum.MoveDirection
-                    
                     if moveDir.Magnitude > 0 then
-                        bv.Velocity = camera.CFrame:VectorToWorldSpace(Vector3.new(moveDir.X * speed, 0, moveDir.Z * -speed))
+                        bv.Velocity = camera.CFrame:VectorToWorldSpace(Vector3.new(moveDir.X * flySpeed, 0, moveDir.Z * -flySpeed))
                     else
                         bv.Velocity = Vector3.new(0, 0, 0)
                     end
@@ -150,5 +164,54 @@ ToggleFly.MouseButton1Click:Connect(function()
     else
         ToggleFly.Text = "Полет (Fly): ВЫКЛ"
         ToggleFly.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
+    end
+end)
+
+-- ЛОГИКА: БЕССМЕРТИЕ (LOOP HEAL)
+local godActive = false
+ToggleGod.MouseButton1Click:Connect(function()
+    godActive = not godActive
+    if godActive then
+        ToggleGod.Text = "Бессмертие (Loop Heal): ВКЛ"
+        ToggleGod.BackgroundColor3 = Color3.fromRGB(50, 180, 50)
+        task.spawn(function()
+            while godActive do
+                pcall(function()
+                    local hum = player.Character:FindFirstChildOfClass("Humanoid")
+                    if hum and hum.Health > 0 then
+                        hum.Health = hum.MaxHealth
+                    end
+                end)
+                task.wait(0.05)
+            end
+        end)
+    else
+        ToggleGod.Text = "Бессмертие (Loop Heal): ВЫКЛ"
+        ToggleGod.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
+    end
+end)
+
+-- ЛОГИКА: МНОГОКРАТНОЕ УДАЛЕНИЕ ЛОВУШЕК
+local autoClearActive = false
+ToggleKillZones.MouseButton1Click:Connect(function()
+    autoClearActive = not autoClearActive
+    if autoClearActive then
+        ToggleKillZones.Text = "Авто-удаление ловушек: ВКЛ"
+        ToggleKillZones.BackgroundColor3 = Color3.fromRGB(50, 180, 50)
+        task.spawn(function()
+            while autoClearActive do
+                pcall(function()
+                    for _, obj in pairs(workspace:GetDescendants()) do
+                        if obj:IsA("TouchTransmitter") or obj.Name == "TouchInterest" then
+                            obj:Destroy()
+                        end
+                    end
+                end)
+                task.wait(1)
+            end
+        end)
+    else
+        ToggleKillZones.Text = "Авто-удаление ловушек: ВЫКЛ"
+        ToggleKillZones.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
     end
 end)
