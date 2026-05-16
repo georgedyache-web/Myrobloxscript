@@ -1,4 +1,3 @@
--- Создание элементов интерфейса
 local ScreenGui = Instance.new("ScreenGui")
 local MainFrame = Instance.new("Frame")
 local Title = Instance.new("TextLabel")
@@ -8,14 +7,13 @@ local ScrollingFrame = Instance.new("ScrollingFrame")
 local UIListLayout = Instance.new("UIListLayout")
 local UIPadding = Instance.new("UIPadding")
 
--- Кнопки функций
 local ButtonSpeed100 = Instance.new("TextButton")
 local ButtonSpeedNormal = Instance.new("TextButton")
 local ToggleFly = Instance.new("TextButton")
 local ToggleGod = Instance.new("TextButton")
 local ToggleKillZones = Instance.new("TextButton")
+local ToggleNoclip = Instance.new("TextButton")
 
--- Скругления углов
 Instance.new("UICorner", MainFrame)
 Instance.new("UICorner", OpenButton)
 Instance.new("UICorner", ButtonSpeed100)
@@ -23,9 +21,10 @@ Instance.new("UICorner", ButtonSpeedNormal)
 Instance.new("UICorner", ToggleFly)
 Instance.new("UICorner", ToggleGod)
 Instance.new("UICorner", ToggleKillZones)
+Instance.new("UICorner", ToggleNoclip)
 
 ScreenGui.Parent = game:GetService("CoreGui")
-ScreenGui.Name = "MegaUltimateModMenu"
+ScreenGui.Name = "UltimateScrollingMenu"
 
 -- КНОПКА ОТКРЫТИЯ
 OpenButton.Name = "OpenButton"
@@ -44,21 +43,19 @@ MainFrame.Name = "MainFrame"
 MainFrame.Parent = ScreenGui
 MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 MainFrame.Position = UDim2.new(0.3, 0, 0.3, 0)
-MainFrame.Size = UDim2.new(0, 260, 0, 280) -- Компактный размер окна
+MainFrame.Size = UDim2.new(0, 260, 0, 280)
 MainFrame.Active = true
 MainFrame.Draggable = true
 
--- ЗАГОЛОВОК
 Title.Parent = MainFrame
 Title.Size = UDim2.new(1, -40, 0, 40)
 Title.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-Title.Text = "  MEGA MOD MENU"
+Title.Text = "  ULTIMATE MENU"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.TextSize = 16
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Font = Enum.Font.SourceSansBold
 
--- КНОПКА ЗАКРЫТИЯ (X)
 CloseMenu.Parent = MainFrame
 CloseMenu.Position = UDim2.new(1, -40, 0, 0)
 CloseMenu.Size = UDim2.new(0, 40, 0, 40)
@@ -78,14 +75,13 @@ OpenButton.MouseButton1Click:Connect(function()
     OpenButton.Visible = false
 end)
 
--- ЗОНА ПРОКРУТКИ (ScrollingFrame) — чтобы можно было мотать
+-- ЗОНА ПРОКРУТКИ (МОТАТЬ ТУТ)
 ScrollingFrame.Parent = MainFrame
 ScrollingFrame.Position = UDim2.new(0, 0, 0, 40)
 ScrollingFrame.Size = UDim2.new(1, 0, 1, -40)
 ScrollingFrame.BackgroundTransparency = 1
-ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 320) -- Размер прокручиваемой зоны
+ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 380) -- Увеличили зону для новой кнопки
 ScrollingFrame.ScrollBarThickness = 6
-ScrollingFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100)
 
 UIListLayout.Parent = ScrollingFrame
 UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
@@ -96,7 +92,6 @@ UIPadding.PaddingTop = UDim.new(0, 10)
 UIPadding.PaddingLeft = UDim.new(0, 12)
 UIPadding.PaddingRight = UDim.new(0, 12)
 
--- Шаблон для быстрой настройки внешнего вида кнопок
 local function setupButton(btn, text, color)
     btn.Parent = ScrollingFrame
     btn.Size = UDim2.new(1, 0, 0, 45)
@@ -107,32 +102,28 @@ local function setupButton(btn, text, color)
     btn.Font = Enum.Font.SourceSansBold
 end
 
--- Создание всех кнопок в списке
 setupButton(ButtonSpeed100, "Скорость 100", Color3.fromRGB(50, 150, 50))
 setupButton(ButtonSpeedNormal, "Обычная скорость (16)", Color3.fromRGB(70, 70, 70))
 setupButton(ToggleFly, "Полет (Fly): ВЫКЛ", Color3.fromRGB(180, 50, 50))
-setupButton(ToggleGod, "Бессмертие (Loop Heal): ВЫКЛ", Color3.fromRGB(180, 50, 50))
+setupButton(ToggleNoclip, "Сквозь стены (Noclip): ВЫКЛ", Color3.fromRGB(180, 50, 50))
+setupButton(ToggleGod, "РАБОЧЕЕ БЕССМЕРТИЕ", Color3.fromRGB(130, 50, 200))
 setupButton(ToggleKillZones, "Авто-удаление ловушек: ВЫКЛ", Color3.fromRGB(180, 50, 50))
 
--- ЛОГИКА: СКОРОСТЬ 100
-ButtonSpeed100.MouseButton1Click:Connect(function()
-    pcall(function()
-        game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid").WalkSpeed = 100
-    end)
-end)
-
--- ЛОГИКА: СКОРОСТЬ 16
-ButtonSpeedNormal.MouseButton1Click:Connect(function()
-    pcall(function()
-        game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid").WalkSpeed = 16
-    end)
-end)
-
--- ЛОГИКА: ПОЛЕТ (FLY)
-local flying = false
-local flySpeed = 50
 local player = game:GetService("Players").LocalPlayer
 
+-- СКОРОСТЬ 100
+ButtonSpeed100.MouseButton1Click:Connect(function()
+    pcall(function() player.Character:FindFirstChildOfClass("Humanoid").WalkSpeed = 100 end)
+end)
+
+-- СКОРОСТЬ 16
+ButtonSpeedNormal.MouseButton1Click:Connect(function()
+    pcall(function() player.Character:FindFirstChildOfClass("Humanoid").WalkSpeed = 16 end)
+end)
+
+-- ПОЛЕТ
+local flying = false
+local flySpeed = 50
 ToggleFly.MouseButton1Click:Connect(function()
     flying = not flying
     if flying then
@@ -141,16 +132,13 @@ ToggleFly.MouseButton1Click:Connect(function()
         task.spawn(function()
             local char = player.Character or player.CharacterAdded:Wait()
             local root = char:WaitForChild("HumanoidRootPart")
-            local bv = Instance.new("BodyVelocity")
+            local bv = Instance.new("BodyVelocity", root)
             bv.Name = "FlyVelocity"
-            bv.Velocity = Vector3.new(0, 0, 0)
             bv.MaxForce = Vector3.new(100000, 100000, 100000)
-            bv.Parent = root
             local camera = workspace.CurrentCamera
             while flying do
                 pcall(function()
-                    local hum = char:FindFirstChildOfClass("Humanoid")
-                    local moveDir = hum.MoveDirection
+                    local moveDir = char:FindFirstChildOfClass("Humanoid").MoveDirection
                     if moveDir.Magnitude > 0 then
                         bv.Velocity = camera.CFrame:VectorToWorldSpace(Vector3.new(moveDir.X * flySpeed, 0, moveDir.Z * -flySpeed))
                     else
@@ -167,31 +155,50 @@ ToggleFly.MouseButton1Click:Connect(function()
     end
 end)
 
--- ЛОГИКА: БЕССМЕРТИЕ (LOOP HEAL)
-local godActive = false
-ToggleGod.MouseButton1Click:Connect(function()
-    godActive = not godActive
-    if godActive then
-        ToggleGod.Text = "Бессмертие (Loop Heal): ВКЛ"
-        ToggleGod.BackgroundColor3 = Color3.fromRGB(50, 180, 50)
-        task.spawn(function()
-            while godActive do
-                pcall(function()
-                    local hum = player.Character:FindFirstChildOfClass("Humanoid")
-                    if hum and hum.Health > 0 then
-                        hum.Health = hum.MaxHealth
-                    end
-                end)
-                task.wait(0.05)
-            end
-        end)
+-- СКВОЗЬ СТЕНЫ (NOCLIP)
+local noclipActive = false
+ToggleNoclip.MouseButton1Click:Connect(function()
+    noclipActive = not noclipActive
+    if noclipActive then
+        ToggleNoclip.Text = "Сквозь стены (Noclip): ВКЛ"
+        ToggleNoclip.BackgroundColor3 = Color3.fromRGB(50, 180, 50)
     else
-        ToggleGod.Text = "Бессмертие (Loop Heal): ВЫКЛ"
-        ToggleGod.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
+        ToggleNoclip.Text = "Сквозь стены (Noclip): ВЫКЛ"
+        ToggleNoclip.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
     end
 end)
 
--- ЛОГИКА: МНОГОКРАТНОЕ УДАЛЕНИЕ ЛОВУШЕК
+game:GetService("RunService").Stepped:Connect(function()
+    if noclipActive then
+        pcall(function()
+            local char = player.Character
+            if char then
+                for _, part in pairs(char:GetDescendants()) do
+                    if part:IsA("BasePart") then
+                        part.CanCollide = false
+                    end
+                end
+            end
+        end)
+    end
+end)
+
+-- РАБОЧЕЕ БЕССМЕРТИЕ
+ToggleGod.MouseButton1Click:Connect(function()
+    pcall(function()
+        local char = player.Character
+        local hum = char and char:FindFirstChildOfClass("Humanoid")
+        if hum then
+            local clone = hum:Clone()
+            hum:Destroy()
+            clone.Parent = char
+            ToggleGod.Text = "БЕССМЕРТИЕ АКТИВИРОВАНО"
+            ToggleGod.BackgroundColor3 = Color3.fromRGB(50, 180, 50)
+        end
+    end)
+end)
+
+-- АВТО-УДАЛЕНИЕ ЛОВУШЕК
 local autoClearActive = false
 ToggleKillZones.MouseButton1Click:Connect(function()
     autoClearActive = not autoClearActive
